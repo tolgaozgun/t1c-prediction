@@ -4,7 +4,7 @@ import tensorflow as tf
 import nibabel as nib
 from sklearn.model_selection import train_test_split
 
-class CustomDataLoader(tf.keras.utils.Sequence):
+class GaziBrainsDataLoader(tf.keras.utils.Sequence):
     def __init__(self, dataset_folder, batch_size, validation_split=0.2):
         self.dataset_folder = dataset_folder
         self.batch_size = batch_size
@@ -17,9 +17,17 @@ class CustomDataLoader(tf.keras.utils.Sequence):
         sub_folders = sorted(os.listdir(os.path.join(self.dataset_folder, "sourcedata")))
         for sub_folder in sub_folders:
             if sub_folder.startswith("sub-"):
+
+                # Folder structure: sourcedata/sub-x/anat/*.nii.gz
+                # We need to save sub-x as we will need number x later
+                # sub_folder_path contains a link to sourcedata/sub-x
+                # t1c_folder contains a link to sourcedata/sub-x/anat
                 sub_folder_path = os.path.join(self.dataset_folder, "sourcedata", sub_folder)
-                t1c_path = os.path.join(sub_folder_path, f"{os.path.basename(sub_folder_path)}_ce-GADOLINIUM_T1w.nii.gz")
-                if os.path.isdir(sub_folder_path) and os.path.exist(t1c_path):
+                t1c_folder = os.path.join(sub_folder_path, "anat")
+                
+                # Check if T1-C file exists, if not we cannot use this for training
+                t1c_path = os.path.join(t1c_folder, f"{os.path.basename(sub_folder_path)}_ce-GADOLINIUM_T1w.nii.gz")
+                if os.path.isdir(sub_folder_path) and os.path.exists(t1c_path):
                     data_paths.append(sub_folder_path)
         return data_paths
 
@@ -31,20 +39,18 @@ class CustomDataLoader(tf.keras.utils.Sequence):
         batch_x, batch_y = [], []
 
         for data_path in batch_paths:
+            folder_path = os.path.join(data_path, "anat")
             # Load mandatory files
-            t1w_path = os.path.join(data_path, f"{os.path.basename(data_path)}_T1w.nii.gz")
-            flair_path = os.path.join(data_path, f"{os.path.basename(data_path)}_FLAIR.nii.gz")
-            t2w_path = os.path.join(data_path, f"{os.path.basename(data_path)}_T2w.nii.gz")
+            t1w_path = os.path.join(folder_path, f"{os.path.basename(data_path)}_T1w.nii.gz")
+            flair_path = os.path.join(folder_path, f"{os.path.basename(data_path)}_FLAIR.nii.gz")
+            t2w_path = os.path.join(folder_path, f"{os.path.basename(data_path)}_T2w.nii.gz")
             t1w_img = nib.load(t1w_path).get_fdata()
             flair_img = nib.load(flair_path).get_fdata()
             t2w_img = nib.load(t2w_path).get_fdata()
 
             # Load optional files if available
-            gadolinium_t1w_path = os.path.join(data_path, f"{os.path.basename(data_path)}_ce-GADOLINIUM_T1w.nii.gz")
-            # if os.path.exists(gadolinium_t1w_path): 
-            # This check is done in data loading
+            gadolinium_t1w_path = os.path.join(folder_path, f"{os.path.basename(data_path)}_ce-GADOLINIUM_T1w.nii.gz")
             gadolinium_t1w_img = nib.load(gadolinium_t1w_path).get_fdata()
-                # Add code here to process gadolinium_t1w_img if needed
 
             # Preprocess and normalize the images as needed
             # Add code here for preprocessing and normalization
@@ -61,21 +67,22 @@ class CustomDataLoader(tf.keras.utils.Sequence):
         val_x, val_y = [], []
 
         for data_path in self.val_paths:
+            folder_path = os.path.join(data_path, "anat")
+
             # Load mandatory files (similar to __getitem__)
-            t1w_path = os.path.join(data_path, f"{os.path.basename(data_path)}_T1w.nii.gz")
-            flair_path = os.path.join(data_path, f"{os.path.basename(data_path)}_FLAIR.nii.gz")
-            t2w_path = os.path.join(data_path, f"{os.path.basename(data_path)}_T2w.nii.gz")
+            t1w_path = os.path.join(folder_path, f"{os.path.basename(data_path)}_T1w.nii.gz")
+            flair_path = os.path.join(folder_path, f"{os.path.basename(data_path)}_FLAIR.nii.gz")
+            t2w_path = os.path.join(folder_path, f"{os.path.basename(data_path)}_T2w.nii.gz")
             t1w_img = nib.load(t1w_path).get_fdata()
             flair_img = nib.load(flair_path).get_fdata()
             t2w_img = nib.load(t2w_path).get_fdata()
 
             # Load optional files if available (similar to __getitem__)
-            gadolinium_t1w_path = os.path.join(data_path, f"{os.path.basename(data_path)}_ce-GADOLINIUM_T1w.nii.gz")
-            # if not os.path.exists(gadolinium_t1w_path):
-            # This test is done in data loading
-
+            gadolinium_t1w_path = os.path.join(folder_path, f"{os.path.basename(data_path)}_ce-GADOLINIUM_T1w.nii.gz")
             gadolinium_t1w_img = nib.load(gadolinium_t1w_path).get_fdata()
-                # Add code here to process gadolinium_t1w_img if needed
+
+            # type of images are np.ndarray at this point
+
 
             # Preprocess and normalize the images as needed (similar to __getitem__)
             # Add code here for preprocessing and normalization
