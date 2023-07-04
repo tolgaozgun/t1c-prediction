@@ -1,6 +1,7 @@
 import tensorflow as tf
 
 LAMBDA = 100
+INPUT_CHANNELS = 3
 OUTPUT_CHANNELS = 3
 IMG_WIDTH = 256
 IMG_HEIGHT = 256
@@ -36,7 +37,7 @@ def upsample(filters, size, apply_dropout=False):
 
 
 def Generator():
-  inputs = tf.keras.layers.Input(shape=[256, 256, 3])
+  inputs = tf.keras.layers.Input(shape=[IMG_WIDTH, IMG_HEIGHT, INPUT_CHANNELS])
 
   down_stack = [
     downsample(64, 4, apply_batchnorm=False),  
@@ -92,8 +93,8 @@ def generator_loss(disc_generated_output, gen_output, target):
 def Discriminator():
   initializer = tf.random_normal_initializer(0., 0.02)
 
-  inp = tf.keras.layers.Input(shape=[256, 256, 3], name='input_image')
-  tar = tf.keras.layers.Input(shape=[256, 256, 3], name='target_image')
+  inp = tf.keras.layers.Input(shape=[IMG_WIDTH, IMG_HEIGHT, INPUT_CHANNELS], name='input_image')
+  tar = tf.keras.layers.Input(shape=[IMG_WIDTH, IMG_HEIGHT, OUTPUT_CHANNELS], name='target_image')
 
   x = tf.keras.layers.concatenate([inp, tar])  
 
