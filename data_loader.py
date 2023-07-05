@@ -133,7 +133,7 @@ class GaziBrainsDataLoader(tf.keras.utils.Sequence):
                 concatenated_img = np.concatenate([t1w_img[..., np.newaxis], t2w_img[..., np.newaxis], flair_img[..., np.newaxis]], axis=-1)
                 train_x.append(concatenated_img)
                 train_y.append(gadolinium_t1w_img)
-                
+
                 if debug: 
                     print(f'Length of train_x: {len(train_x)}')
                     print(f'Length of train_y: {len(train_y)}')
