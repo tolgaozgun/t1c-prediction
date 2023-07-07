@@ -12,12 +12,12 @@ log_dir = "logs/"
 summary_writer = tf.summary.create_file_writer(
   log_dir + "fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
 
-# generator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
-# discriminator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
+generator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
+discriminator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
 
 # Mac only
-generator_optimizer = tf.keras.optimizers.legacy.Adam(2e-4, beta_1=0.5)
-discriminator_optimizer = tf.keras.optimizers.legacy.Adam(2e-4, beta_1=0.5)
+# generator_optimizer = tf.keras.optimizers.legacy.Adam(2e-4, beta_1=0.5)
+# discriminator_optimizer = tf.keras.optimizers.legacy.Adam(2e-4, beta_1=0.5)
 
 discriminator = Discriminator()
 generator = Generator()
