@@ -8,7 +8,7 @@ from training import fit, load_checkpoint
 from matplotlib import pyplot as plt
 import numpy as np
 
-PATH = "/Users/tolgaozgun/gazi_brains_2020/data/GAZI_BRAINS_2020"
+PATH = "/tf/shared-datas/TurkBeyinProjesi/GaziBrains_BIDS/GAZI_BRAINS_2020/sourcedata/"
 BUFFER_SIZE = 400
 BATCH_SIZE = 1
 

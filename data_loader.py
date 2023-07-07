@@ -57,7 +57,7 @@ class GaziBrainsDataLoader(tf.keras.utils.Sequence):
         return t1w_img, t2w_img, flair_img, gadolinium_t1w_img
 
 
-    def __getitem__(self, index) -> tuple[list, list]:
+    def __getitem__(self, index):
         batch_paths = self.train_paths[index*self.batch_size : (index+1)*self.batch_size]
         batch_x, batch_y = [], []
 
@@ -99,7 +99,7 @@ class GaziBrainsDataLoader(tf.keras.utils.Sequence):
 
         return batch_x, batch_y
 
-    def get_train_data(self) -> tuple[list, list]:
+    def get_train_data(self):
         train_x, train_y = [], []
 
         for data_path in self.train_paths:
@@ -140,7 +140,7 @@ class GaziBrainsDataLoader(tf.keras.utils.Sequence):
             
         return train_x, train_y
 
-    def get_validation_data(self) -> tuple[list, list]:
+    def get_validation_data(self):
         val_x, val_y = [], []
 
         for data_path in self.val_paths:
