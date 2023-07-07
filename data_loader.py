@@ -24,7 +24,7 @@ class GaziBrainsDataLoader(tf.keras.utils.Sequence):
                 # We need to save sub-x as we will need number x later
                 # sub_folder_path contains a link to sourcedata/sub-x
                 # t1c_folder contains a link to sourcedata/sub-x/anat
-                sub_folder_path = os.path.join(self.dataset_folder, "sourcedata", sub_folder)
+                sub_folder_path = os.path.join(self.dataset_folder, sub_folder)
                 t1c_folder = os.path.join(sub_folder_path, "anat")
                 
                 # Check if T1-C file exists, if not we cannot use this for training
