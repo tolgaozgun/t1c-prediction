@@ -3,8 +3,8 @@ import tensorflow as tf
 LAMBDA = 100
 INPUT_CHANNELS = 3
 OUTPUT_CHANNELS = 1
-IMG_WIDTH = 256
-IMG_HEIGHT = 256
+IMG_WIDTH = 512
+IMG_HEIGHT = 512
 
 
 def downsample(filters, size, apply_batchnorm=True):

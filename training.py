@@ -7,19 +7,33 @@ from model import Discriminator, Generator, discriminator_loss, generator_loss
 from IPython import display
 
 
-log_dir="logs/"
+log_dir = "logs/"
 
 summary_writer = tf.summary.create_file_writer(
   log_dir + "fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
 
-generator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
-discriminator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
+# generator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
+# discriminator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
+
+# Mac only
+generator_optimizer = tf.keras.optimizers.legacy.Adam(2e-4, beta_1=0.5)
+discriminator_optimizer = tf.keras.optimizers.legacy.Adam(2e-4, beta_1=0.5)
 
 discriminator = Discriminator()
 generator = Generator()
 
-checkpoint_dir = './training_checkpoints'
-checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
+checkpoint_dir = 'training_checkpoints'
+current_dir = os.getcwd()
+checkpoint_abs_dir = os.path.join(current_dir, checkpoint_dir)
+
+print(f"Checkpoint directory: {checkpoint_abs_dir}")
+
+if not (os.path.exists(checkpoint_abs_dir) and os.path.isdir(checkpoint_abs_dir)):
+  print("Checkpoint directory does not exist, creating one..")
+  os.mkdir(checkpoint_abs_dir)
+
+
+checkpoint_prefix = os.path.join(checkpoint_abs_dir, "ckpt")
 checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
                                  discriminator_optimizer=discriminator_optimizer,
                                  generator=generator,
@@ -36,7 +50,12 @@ def generate_images(model, test_input, tar):
     plt.subplot(1, 3, i+1)
     plt.title(title[i])
     
-    plt.imshow(display_list[i] * 0.5 + 0.5)
+    # Show the ground truth as grayscale as it only has a single channel.
+    if i == 1:
+      plt.imshow(display_list[i] * 0.5 + 0.5, cmap="gray")
+    else:
+      plt.imshow(display_list[i] * 0.5 + 0.5)
+      
     plt.axis('off')
   plt.show()
 
@@ -75,6 +94,7 @@ def fit(train_ds, test_ds, steps):
   start = time.time()
 
   for step, (input_image, target) in train_ds.repeat().take(steps).enumerate():
+    # print(f"Step {step}")
     if (step) % 1000 == 0:
       display.clear_output(wait=True)
 
@@ -94,3 +114,7 @@ def fit(train_ds, test_ds, steps):
     if (step + 1) % 5000 == 0:
       checkpoint.save(file_prefix=checkpoint_prefix)
 
+
+def load_checkpoint():
+  checkpoint.restore(tf.train.latest_checkpoint(checkpoint_abs_dir))
+  print("Checkpoint restored.")
