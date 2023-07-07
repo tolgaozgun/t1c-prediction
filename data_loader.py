@@ -16,7 +16,7 @@ class GaziBrainsDataLoader(tf.keras.utils.Sequence):
 
     def _get_data_paths(self):
         data_paths = []
-        sub_folders = sorted(os.listdir(os.path.join(self.dataset_folder, "sourcedata")))
+        sub_folders = sorted(os.listdir(self.dataset_folder))
         for sub_folder in sub_folders:
             if sub_folder.startswith("sub-"):
 
